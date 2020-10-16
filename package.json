@@ -5,6 +5,7 @@
   "dependencies": {
     "@material-ui/core": "latest",
     "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "^4.0.0-alpha.56",
     "@types/lodash": "^4.14.161",
     "clsx": "latest",
     "emoji-regex": "^9.0.0",

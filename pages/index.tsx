@@ -5,11 +5,13 @@ import {
   Container,
   Grid,
   IconButton,
+  Snackbar,
   TextField,
   Toolbar,
   Typography,
 } from "@material-ui/core"
 import { Error as ErrorIcon, Replay as ReplayIcon, Save as SaveIcon } from "@material-ui/icons"
+import { Alert } from "@material-ui/lab"
 import { cloneDeep } from "lodash"
 import React, { CSSProperties, useEffect, useState } from "react"
 import EmojiTextfield from "../components/EmojiTextfield"
@@ -26,24 +28,26 @@ const boxStyle: CSSProperties = {
 }
 
 export default function Index() {
-  const [failed, setFailed] = useState<boolean>(false)
-  const [loading, setLoading] = useState<boolean>(false)
+  const [failed, setFailed] = useState(false)
+  const [loading, setLoading] = useState(false)
 
-  const [url, setUrl] = useState<string>("")
+  const [url, setUrl] = useState("")
 
-  const [userInput, setUserInput] = useState<string>("")
-  const [inputError, setInputError] = useState<boolean>(false)
+  const [userInput, setUserInput] = useState("")
+  const [inputError, setInputError] = useState(false)
   const handleUrlTextfieldChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (inputError) setInputError(false)
     setUserInput(event.target.value)
   }
 
-  const [fillAllEmoji, setFillAllEmoji] = useState<string>("")
+  const [fillAllEmoji, setFillAllEmoji] = useState("")
   const handleFillAllEmojiTextfieldChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFillAllEmoji(event.target.value)
   }
 
   const [stickerSet, setStickerSet] = useState<LineStickerSet | null>(null)
+
+  const [alert, setAlert] = useState(false)
 
   useEffect(() => {
     if (url !== "" && !stickerSet) {
@@ -94,6 +98,10 @@ export default function Index() {
 
   const handleExport = () => {
     if (stickerSet) {
+      if (stickerSet.stickers.some((sticker) => !sticker.emojis || sticker.emojis === "")) {
+        setAlert(true)
+        return
+      }
       const file = new Blob([JSON.stringify(stickerSet, null, 2)], { type: "application/json" })
       const element = document.createElement("a")
       element.setAttribute("href", URL.createObjectURL(file))
@@ -186,6 +194,11 @@ export default function Index() {
         {loading && LoadingPage}
         {failed && ErrorPage}
         {!!stickerSet && StickerGrid}
+        <Snackbar open={alert} autoHideDuration={6000} onClose={() => setAlert(false)}>
+          <Alert onClose={() => setAlert(false)} severity="warning">
+            All stickers need an emoji!
+          </Alert>
+        </Snackbar>
       </Container>
     </>
   )
