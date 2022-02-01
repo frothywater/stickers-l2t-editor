@@ -105,7 +105,7 @@ export default function Index() {
       const file = new Blob([JSON.stringify(stickerSet, null, 2)], { type: "application/json" })
       const element = document.createElement("a")
       element.setAttribute("href", URL.createObjectURL(file))
-      element.setAttribute("download", `LineStickerSet-${stickerSet?.id}.json`)
+      element.setAttribute("download", `${stickerSet.name}.json`)
       element.style.display = "none"
       document.body.appendChild(element)
       element.click()
