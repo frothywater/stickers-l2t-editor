@@ -10,6 +10,7 @@ export interface LineStickerSet {
   author: string
   authorUrl: string
   mainImageUrl: string
+  animated: boolean
   stickers: LineSticker[]
 }
 

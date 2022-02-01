@@ -17,8 +17,7 @@ function parseStickers(doc: Document): LineSticker[] {
     })
     .map((data) => {
       const id = parseInt(data.id, 10)
-      const rawURL = !!data.animationUrl ? data.animationUrl : data.staticUrl
-      const url = rawURL
+      const url = (!!data.animationUrl ? data.animationUrl : data.staticUrl)
         .replace(`;compress=true`, ``)
         .replace(`android`, `ios`)
         .replace(`sticker.png`, `sticker@2x.png`)
@@ -44,9 +43,11 @@ export function parseStickerSet(doc: Document): LineStickerSet {
   if (!str) throw Error(`No data preview string for main image`)
   const mainImageData: LineDataPreview = JSON.parse(str)
   const id = parseInt(mainImageData.id, 10)
-  const mainImageUrl = mainImageData.staticUrl.replace(`;compress=true`, ``)
+  const animated = !!mainImageData.animationUrl
+  const mainImageUrl = (animated?mainImageData.animationUrl : mainImageData.staticUrl)
+    .replace(`;compress=true`, ``)
 
   const stickers = parseStickers(doc)
 
-  return { name, id, author, authorUrl, mainImageUrl, stickers }
+  return { name, id, author, authorUrl, mainImageUrl, animated, stickers }
 }
