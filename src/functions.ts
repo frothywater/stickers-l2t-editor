@@ -17,7 +17,8 @@ function parseStickers(doc: Document): LineSticker[] {
     })
     .map((data) => {
       const id = parseInt(data.id, 10)
-      const url = data.staticUrl
+      const rawURL = !!data.animationUrl ? data.animationUrl : data.staticUrl
+      const url = rawURL
         .replace(`;compress=true`, ``)
         .replace(`android`, `ios`)
         .replace(`sticker.png`, `sticker@2x.png`)
