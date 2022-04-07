@@ -8,6 +8,16 @@ export async function fetchDoc(url: string): Promise<Document> {
     .then((text) => new DOMParser().parseFromString(text, `text/html`))
 }
 
+function getURL(preview: LineDataPreview): string {
+  if (preview.animationUrl) return preview.animationUrl
+  else if (preview.popupUrl) return preview.popupUrl
+  else return preview.staticUrl
+}
+
+function isAnimated(preview: LineDataPreview): boolean {
+  return !!preview.animationUrl || !!preview.popupUrl
+}
+
 function parseStickers(doc: Document): LineSticker[] {
   return Array.from(doc.querySelectorAll(`li.FnStickerPreviewItem`))
     .map((element) => {
@@ -17,7 +27,7 @@ function parseStickers(doc: Document): LineSticker[] {
     })
     .map((data) => {
       const id = parseInt(data.id, 10)
-      const url = (!!data.animationUrl ? data.animationUrl : data.staticUrl)
+      const url = getURL(data)
         .replace(`;compress=true`, ``)
         .replace(`android`, `ios`)
         .replace(`sticker.png`, `sticker@2x.png`)
@@ -43,8 +53,8 @@ export function parseStickerSet(doc: Document): LineStickerSet {
   if (!str) throw Error(`No data preview string for main image`)
   const mainImageData: LineDataPreview = JSON.parse(str)
   const id = parseInt(mainImageData.id, 10)
-  const animated = !!mainImageData.animationUrl
-  const mainImageUrl = (animated?mainImageData.animationUrl : mainImageData.staticUrl)
+  const animated = isAnimated(mainImageData)
+  const mainImageUrl = getURL(mainImageData)
     .replace(`;compress=true`, ``)
 
   const stickers = parseStickers(doc)
